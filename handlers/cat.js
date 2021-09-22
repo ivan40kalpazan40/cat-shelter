@@ -110,7 +110,10 @@ module.exports = (req, res) => {
         res.end();
       });
     });
-  } else if (pathname.includes('/cats-edit') && req.method === 'GET') {
+  } else if (
+    pathname.includes('/cats-edit') &&
+    req.method.toLowerCase() === 'get'
+  ) {
     // get the cat ID
     const link = url.parse(req.url);
     const {
@@ -152,7 +155,6 @@ module.exports = (req, res) => {
         '{{catBreeds}}',
         breedsAsOptions.join('')
       );
-      //console.log(`&&&&${modifiedData}`);
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.write(modifiedData);
     });
@@ -201,8 +203,64 @@ module.exports = (req, res) => {
     readCat.on('end', () => {
       res.end();
     });
-  } else if (pathname.includes('/cats-edit') && req.method === 'POST') {
-    // TODO ...
+  } else if (
+    pathname.includes('/cats-edit') &&
+    req.method.toLowerCase() === 'post'
+  ) {
+    // get data from form
+    let form = new formidable.IncomingForm();
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        return console.error(`ERR:: ${err.message}`);
+      }
+      const { name, description, breed } = fields;
+      const { size, type, lastModified } = files.upload;
+      const filePath = files.upload.path;
+      const fileName = files.upload.name;
+
+      const newPath = path.normalize(
+        path.join(__dirname, '../', './content/images/', fileName)
+      );
+
+      fs.rename(filePath, newPath, (err) => {
+        if (err) {
+          console.error(`ERR: ${err.message}`);
+        } else {
+          console.log(`The file -> ${fileName} <-- was successfully uploaded!`);
+        }
+      });
+      // find cat in JSON with same id
+      fs.readFile('./data/cats.json', (err, data) => {
+        if (err) {
+          return console.error(`ERR:: ${err.message}`);
+        }
+
+        let cats = JSON.parse(data);
+        const catId = req.url.split('/').reverse()[0];
+        const catObj = {
+          id: catId,
+          name,
+          description,
+          breed,
+          image: fileName,
+        };
+        let foundCat = cats.find((cat) => cat.id === catId);
+        let foundIndex = cats.indexOf(foundCat);
+        cats.splice(foundIndex, 1, catObj);
+        let json = JSON.stringify(cats);
+        fs.writeFile('./data/cats.json', json, (err) => {
+          if (err) {
+            return console.error(`ERR:: ${err.message}`);
+          }
+          console.log(`Cat updated successfully`);
+          res.writeHead(301, { Location: '/' });
+          res.end();
+        });
+      });
+    });
+
+    // update JSON
+    // redirect to Home
   } else if (
     pathname.includes('/cats-find-new-home') &&
     req.method === 'POST'
