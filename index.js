@@ -15,5 +15,5 @@ http
     }
   })
   .listen(port, () => {
-    console.log(`Serverr   running on port ${port}....`);
+    console.log(`Server   running on port ${port}....`);
   });

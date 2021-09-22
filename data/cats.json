@@ -1,1 +1,23 @@
-[{"id":"4z3c521snktumtq7y","name":"Navcho","description":"This is Ivaylo's famous cat.","breed":"Bengal Cat","image":"Bengal_body_6.jpg"}]
+[
+  {
+    "id": "4z3c5912ktv88xjw",
+    "name": "Sisi",
+    "description": "Sisi is big home cat!",
+    "breed": "American Bobtail Cat Breed",
+    "image": "sissy.jpeg"
+  },
+  {
+    "id": "4z3c5ciyktv8rd5w",
+    "name": "Cali Kittens",
+    "description": "These kittens are from California!",
+    "breed": "Siamese",
+    "image": "kittens-teals.jpg"
+  },
+  {
+    "id": "4z3c5db6ktv8x6ts",
+    "name": "Lady Cherry",
+    "description": "This Birman cat is from Vermont!",
+    "breed": "Birman Cat Breed",
+    "image": "cat-of-day-birman-cat-01.jpg"
+  }
+]
