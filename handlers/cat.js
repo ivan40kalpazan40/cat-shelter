@@ -244,6 +244,7 @@ module.exports = (req, res) => {
           breed,
           image: fileName,
         };
+        // update JSON
         let foundCat = cats.find((cat) => cat.id === catId);
         let foundIndex = cats.indexOf(foundCat);
         cats.splice(foundIndex, 1, catObj);
@@ -253,19 +254,44 @@ module.exports = (req, res) => {
             return console.error(`ERR:: ${err.message}`);
           }
           console.log(`Cat updated successfully`);
-          res.writeHead(301, { Location: '/' });
+          // redirect to Home
+          res.writeHead(300, {
+            Location: '/',
+            'Content-Type': 'application/json',
+          });
           res.end();
         });
       });
     });
-
-    // update JSON
-    // redirect to Home
   } else if (
     pathname.includes('/cats-find-new-home') &&
-    req.method === 'POST'
+    req.method.toLowerCase() === 'post'
   ) {
-    // TODO ...
+    fs.readFile('./data/cats.json', (err, data) => {
+      if (err) {
+        return console.error(`ERR: ${err.message}`);
+      }
+      let cats = JSON.parse(data);
+      const catId = req.url.split('/').reverse()[0];
+      let foundCat = cats.find((cat) => cat.id === catId);
+      const catIndex = cats.indexOf(foundCat);
+      cats.splice(catIndex, 1);
+      const json = JSON.stringify(cats);
+      console.log(json);
+      fs.writeFile('./data/cats.json', json, (err) => {
+        if (err) {
+          return console.error(`ERR:: ${err.message}`);
+        }
+        console.log(
+          `The cat named ${foundCat.name} found shelter. Happy days in your new home, ${foundCat.name}!`
+        );
+        res.writeHead(301, {
+          Location: '/',
+          'Content-Type': 'application/json',
+        });
+        res.end();
+      });
+    });
   } else {
     return true;
   }
